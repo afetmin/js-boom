@@ -1,0 +1,163 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+	<title>扫雷</title>
+	<script src="https://cdn.bootcss.com/jquery/3.5.0/jquery.min.js"></script>
+</head>
+<style>
+	.sence{
+		width: 600px;
+		height: 600px;
+		border: 1px solid black;
+		margin: auto;
+		top:0;
+		left:0;
+		right: 0;
+		bottom:0;
+	}
+	.block{
+		width: 59px;
+		height: 59px;
+		font-size: "Arial";
+		text-align: center;
+		line-height: 59px;
+		margin: 0 1px 1px 0;
+		background: #ffbb00;
+		float: left;
+	}
+	.biaoji::after{
+		content:"⛿";
+		color: red;
+	}
+	.zha::after{
+		content:"☠";
+		font-size:35px;
+		z-index: 6;
+	}
+	.tip{
+		/*content:"♕";*/
+		background: white;
+	}
+	.restart{
+		width:100px;
+		height:80px;
+		margin: auto;
+		left:0;
+		top:0;
+		right: 0;
+		bottom:0;
+		font-size: 16px;
+		font-family: "Arial";
+		text-align: center;
+		line-height:80px;
+		background:green;
+		position: absolute;
+		display: none;
+	}
+</style>
+<body>
+	<div class="sence"></div>
+	<div class="restart">重新开始</div>
+
+	<script src="./jquery-1.12.0.js"></script>
+	<script>
+	$(document).on('contextmenu',false);
+	var mousedownHandler=function(e){
+		if(e.which === 1){
+
+			$.proxy(left,this)(e);
+			// zuojian.call(this,e)
+		}else if(e.which === 3){
+			$.proxy(right,this)(e)
+			// youjian.call(this,e)
+		}
+	}
+    
+
+    // var jisuan=function(){
+    // 	return 3
+    // }
+    var xy2id=function(x,y){
+    	return x+'-'+y
+    }
+    var jisuan=function(x,y){
+    	var num=0;
+    	if($('#'+xy2id(x,y-1)).is('.lei')){num++};
+    	if($('#'+xy2id(x,y+1)).is('.lei')){num++};
+    	if($('#'+xy2id(x-1,y-1)).is('.lei')){num++};
+    	if($('#'+xy2id(x-1,y)).is('.lei')){num++};
+    	if($('#'+xy2id(x-1,y+1)).is('.lei')){num++};
+    	if($('#'+xy2id(x+1,y-1)).is('.lei')){num++};
+    	if($('#'+xy2id(x+1,y)).is('.lei')){num++};
+    	if($('#'+xy2id(x+1,y+1)).is('.lei')){num++};
+    	return num;
+
+    }
+	var left=function(e){
+		if($(this).is('.biaoji')){			
+			 return		
+		}if(e.data.lei){
+			alert('die');
+			$('.lei').css('backgroundColor','red').addClass('zha');
+			$('.zha').css('display','block');
+			$('.restart').css('display','block');
+		}else{
+			// var tip=jisuan();		
+			// $(this).text(tip).addClass('tip');
+			$(this).text(jisuan(e.data.x,e.data.y)).addClass('tip');	
+		}
+	}
+
+
+	var right=function(e){
+		
+		if($(this).is('.tip')){
+			return
+		}
+		$(this).toggleClass('biaoji')
+		if($('.lei').length===$('.biaoji').length){
+			if($('.lei.biaoji').length===$('.lei').length){
+				alert('win');
+				return;
+			}else{
+				// alert('fail')
+				$('.restart').css('display','block')
+			}			
+		}
+	}
+
+
+
+	var buchangjing=function(){
+		$('.sence').empty();
+		for(var i=0;i<10;i++){
+			for(var j=0;j<10;j++){
+				var isLei=Math.random()>0.9
+				$('<div>')
+				.attr('id',i+'-'+j)
+				.addClass(function(){
+					return 'block '+(isLei ? 'lei':'');
+				})
+			// .text(function(){return isLei? 'lei':'';})
+			.on('mousedown',{x:i,y:j,lei:isLei},mousedownHandler)
+			.appendTo('.sence');
+		}
+	}
+}
+buchangjing();
+
+
+
+  $('.restart').on('click',function(){
+  	$('.restart').css('display','none');
+  	 buchangjing()
+  })
+
+
+
+	
+
+	</script>
+</body>
+</html>
